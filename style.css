@@ -1,0 +1,961 @@
+/* =============================================
+   Invoice Generator - Stylesheet (School Invoice)
+   ============================================= */
+
+/* --- CSS Variables --- */
+:root {
+    /* Form Panel (Dark Theme) */
+    --form-bg: #0f0f1a;
+    --form-bg-gradient: linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    --form-card-bg: rgba(255, 255, 255, 0.04);
+    --form-card-border: rgba(255, 255, 255, 0.08);
+    --form-card-hover: rgba(255, 255, 255, 0.06);
+    --form-input-bg: rgba(255, 255, 255, 0.07);
+    --form-input-border: rgba(255, 255, 255, 0.12);
+    --form-input-focus: rgba(99, 102, 241, 0.5);
+    --form-text: #e2e8f0;
+    --form-text-muted: #94a3b8;
+    --form-text-dim: #64748b;
+
+    /* Accent */
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --accent-glow: rgba(99, 102, 241, 0.3);
+    --accent-secondary: #22d3ee;
+
+    /* Preview Panel */
+    --preview-bg: #f1f5f9;
+    --paper-bg: #ffffff;
+    --paper-text: #1a1a1a;
+    --paper-border: #333333;
+
+    /* Misc */
+    --danger: #ef4444;
+    --danger-hover: #f87171;
+    --success: #22c55e;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+    --shadow-paper: 0 2px 20px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.1);
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--form-bg);
+    color: var(--form-text);
+    line-height: 1.6;
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* --- App Layout --- */
+.app-container {
+    display: grid;
+    grid-template-columns: 440px 1fr;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* =============================================
+   FORM PANEL
+   ============================================= */
+.form-panel {
+    background: var(--form-bg-gradient);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    position: relative;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.form-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: radial-gradient(ellipse at 30% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Form Header */
+.form-header {
+    padding: 24px 24px 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.form-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #e2e8f0, var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+}
+
+.form-header p {
+    font-size: 0.85rem;
+    color: var(--form-text-muted);
+}
+
+/* Form Scroll Area */
+.form-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 16px 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.form-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.form-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.form-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.form-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Form Sections */
+.form-section {
+    background: var(--form-card-bg);
+    border: 1px solid var(--form-card-border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+}
+
+.form-section:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: var(--form-card-hover);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.section-header:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.toggle-icon {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+    color: var(--form-text-muted);
+}
+
+.form-section:not(.open) .toggle-icon {
+    transform: rotate(-90deg);
+}
+
+.section-body {
+    padding: 0 16px 16px;
+    display: none;
+    animation: fadeSlideIn 0.3s ease;
+}
+
+.form-section.open .section-body {
+    display: block;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--form-text-muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="date"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--form-input-bg);
+    border: 1px solid var(--form-input-border);
+    border-radius: var(--radius-sm);
+    color: var(--form-text);
+    font-family: inherit;
+    font-size: 0.88rem;
+    transition: var(--transition);
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--form-text-dim);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.form-group input[type="file"] {
+    padding: 8px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    background: var(--form-input-bg);
+    border: 1px dashed var(--form-input-border);
+    border-radius: var(--radius-sm);
+    color: var(--form-text-muted);
+}
+
+.form-group input[type="file"]:hover {
+    border-color: var(--accent);
+}
+
+.form-group input[type="date"] {
+    color-scheme: dark;
+}
+
+.form-hint {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--form-text-dim);
+    margin-top: 4px;
+}
+
+/* Form Row (side-by-side) */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* --- Item Card --- */
+.item-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin-bottom: 10px;
+    position: relative;
+    transition: var(--transition);
+    animation: fadeSlideIn 0.3s ease;
+}
+
+.item-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.item-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.item-card-header span {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent-secondary);
+}
+
+.btn-remove-item {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--danger);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn-remove-item:hover {
+    background: rgba(239, 68, 68, 0.3);
+    border-color: var(--danger);
+}
+
+.item-card .form-group label {
+    font-size: 0.72rem;
+}
+
+.item-card .form-group input,
+.item-card .form-group textarea,
+.item-card .form-group select {
+    padding: 8px 10px;
+    font-size: 0.82rem;
+}
+
+.item-card .form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    gap: 8px;
+}
+
+.item-card .form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+/* Add Item Button */
+.btn-add-item {
+    width: 100%;
+    padding: 12px;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px dashed rgba(99, 102, 241, 0.4);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-add-item:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+
+.btn-add-item span {
+    font-size: 1.1rem;
+}
+
+/* --- Form Actions (Bottom Bar) --- */
+.form-actions {
+    padding: 16px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 1;
+}
+
+.btn-primary,
+.btn-secondary {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent), #4f46e5);
+    color: white;
+    box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--accent-hover), #6366f1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--form-text);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* =============================================
+   PREVIEW PANEL
+   ============================================= */
+.preview-panel {
+    background: var(--preview-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.preview-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: var(--shadow-sm);
+    z-index: 5;
+}
+
+.preview-toolbar h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.btn-toolbar {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #64748b;
+    transition: var(--transition);
+    display: none;
+}
+
+.btn-toolbar:hover {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.preview-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* =============================================
+   INVOICE PAPER (School Invoice Preview)
+   ============================================= */
+.invoice-paper {
+    width: 210mm;
+    min-height: 297mm;
+    box-sizing: border-box;
+    background: var(--paper-bg);
+    padding: 20mm 20mm 15mm;
+    box-shadow: var(--shadow-paper);
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    color: var(--paper-text);
+    line-height: 1.6;
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* --- School Invoice Header --- */
+.inv-header-school {
+    margin-bottom: 0;
+}
+
+.inv-header-school-top {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.inv-logo-school img {
+    max-width: 80px;
+    max-height: 80px;
+    object-fit:inherit;
+}
+
+.inv-school-title {
+    flex: 1;
+}
+
+.inv-school-name {
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--paper-text);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inv-invoice-title {
+    font-size: 12pt;
+    font-weight: 400;
+    color: #444;
+    margin-top: 2px;
+    letter-spacing: 1px;
+}
+
+/* --- Separator Line --- */
+.inv-separator {
+    height: 2px;
+    background: var(--paper-text);
+    margin: 12px 0 16px;
+}
+
+.inv-separator-bottom {
+    margin: 24px 0 16px;
+    background: #ccc;
+    height: 1px;
+}
+
+/* --- Invoice Meta Info --- */
+.inv-meta-school {
+    margin-bottom: 20px;
+}
+
+.inv-meta-row {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 2px;
+    font-size: 9.5pt;
+}
+
+.inv-meta-label {
+    width: 100px;
+    font-weight: 400;
+    color: var(--paper-text);
+}
+
+.inv-meta-sep {
+    width: 15px;
+    text-align: center;
+}
+
+.inv-meta-value {
+    flex: 1;
+}
+
+.inv-meta-bold {
+    font-weight: 700;
+}
+
+/* --- Bill To Section --- */
+.inv-bill-to {
+    margin-bottom: 24px;
+}
+
+.inv-bill-to-title {
+    font-size: 10.5pt;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--paper-text);
+}
+
+.inv-bill-to-row {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 4px;
+    font-size: 9.5pt;
+}
+
+.inv-bill-label {
+    font-weight: 700;
+    margin-right: 8px;
+    white-space: nowrap;
+}
+
+.inv-bill-value {
+    flex: 1;
+}
+
+.inv-student-name-underline {
+    border-bottom: 1px solid var(--paper-text);
+    padding-bottom: 2px;
+    min-width: 200px;
+    display: inline-block;
+}
+
+/* --- Payment Details Section --- */
+.inv-payment-details {
+    margin-bottom: 20px;
+}
+
+.inv-section-title {
+    font-size: 10.5pt;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--paper-text);
+}
+
+/* --- School Items Table --- */
+.inv-items-table-school {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+    margin-bottom: 0;
+}
+
+.inv-items-table-school th {
+    background: #f5f5f5;
+    font-weight: 600;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 9pt;
+    border-bottom: 2px solid #ddd;
+    border-top: 2px solid #ddd;
+    color: var(--paper-text);
+}
+
+.inv-items-table-school td {
+    padding: 7px 10px;
+    vertical-align: top;
+    border-bottom: 1px solid #eee;
+}
+
+.inv-items-table-school .col-no { width: 40px; text-align: center; }
+.inv-items-table-school .col-desc { width: auto; }
+.inv-items-table-school .col-qty { width: 50px; text-align: center; }
+.inv-items-table-school .col-amount { width: 130px; text-align: right; }
+.inv-items-table-school .col-status { width: 130px; text-align: center; }
+
+.inv-items-table-school tbody td.text-center { text-align: center; }
+.inv-items-table-school tbody td.text-right { text-align: right; }
+
+.inv-items-table-school .empty-row {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 16px;
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 3px;
+    font-size: 8pt;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-paid {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.status-unpaid {
+    background: #fce4ec;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+/* --- Summary Table (School) --- */
+.inv-summary-table-school {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+    border-top: 2px solid #ddd;
+}
+
+.inv-summary-table-school td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.inv-summary-table-school .summary-label-cell {
+    text-align: right;
+    font-weight: 600;
+    width: auto;
+    padding-right: 20px;
+}
+
+.inv-summary-table-school .summary-value-cell {
+    text-align: right;
+    width: 130px;
+    font-weight: 600;
+}
+
+.inv-summary-table-school .summary-total-row td {
+    font-weight: 700;
+    font-size: 10pt;
+    border-top: 2px solid var(--paper-text);
+    border-bottom: 2px solid var(--paper-text);
+    padding: 8px 10px;
+}
+
+/* --- Payment Method --- */
+.inv-payment-method {
+    margin-bottom: 20px;
+}
+
+.inv-payment-method-row {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 3px;
+    font-size: 9.5pt;
+}
+
+.inv-pm-label {
+    font-weight: 700;
+    margin-right: 8px;
+    white-space: nowrap;
+}
+
+.inv-pm-value {
+    flex: 1;
+}
+
+.inv-payment-note {
+    margin-top: 8px;
+    font-size: 9pt;
+    color: #444;
+}
+
+/* --- Notes Section --- */
+.inv-notes {
+    margin-bottom: 10px;
+}
+
+.inv-notes-title {
+    margin-bottom: 6px;
+}
+
+.inv-notes-list {
+    list-style: disc;
+    margin-left: 20px;
+    font-size: 9pt;
+    color: #333;
+}
+
+.inv-notes-list li {
+    margin-bottom: 4px;
+    line-height: 1.5;
+}
+
+.inv-notes-bottom {
+    margin-bottom: 20px;
+}
+
+/* --- Closing / Footer --- */
+.inv-closing {
+    margin-top: 10px;
+}
+
+.inv-closing-greeting {
+    font-size: 9.5pt;
+    margin-bottom: 6px;
+    color: var(--paper-text);
+}
+
+.inv-closing-dept {
+    font-size: 9.5pt;
+    margin-bottom: 2px;
+    color: var(--paper-text);
+}
+
+.inv-closing-school {
+    font-size: 9.5pt;
+    color: var(--paper-text);
+}
+
+/* =============================================
+   PRINT STYLES
+   ============================================= */
+@media print {
+    body {
+        overflow: visible;
+        height: auto;
+        background: white;
+    }
+
+    .app-container {
+        display: block;
+        height: auto;
+    }
+
+    .form-panel,
+    .preview-toolbar {
+        display: none !important;
+    }
+
+    .preview-panel {
+        background: none;
+    }
+
+    .preview-scroll {
+        padding: 0;
+        overflow: visible;
+    }
+
+    .invoice-paper {
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+        min-height: auto;
+        padding: 15mm;
+    }
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media screen and (max-width: 1024px) {
+    .app-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    .form-panel {
+        max-height: 50vh;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-toolbar {
+        display: block;
+    }
+
+    .preview-scroll {
+        padding: 16px;
+    }
+
+    .invoice-paper {
+        width: 100%;
+        min-height: auto;
+        padding: 20px;
+        font-size: 9pt;
+    }
+
+    .form-panel.collapsed {
+        max-height: 0;
+        overflow: hidden;
+        border: none;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .item-card .form-row-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .item-card .form-row-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .inv-header-school-top {
+        flex-direction: column;
+    }
+
+    .inv-bill-to-row {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .inv-meta-row {
+        flex-direction: column;
+        gap: 2px;
+    }
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shimmer 3s infinite;
+}
+
+/* Loading state for PDF export */
+.btn-primary.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.btn-primary.loading::after {
+    animation: shimmer 1s infinite;
+}

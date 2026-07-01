@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCoS Invoice Generator</title>
+    <meta name="description" content="Generator invoice digital untuk Jakarta Cosmopolite Islamic School">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- ==================== FORM PANEL ==================== -->
+    <aside class="form-panel" id="formPanel">
+        <div class="form-header">
+            <h1>📝 Invoice Generator</h1>
+            <p>Buat invoice sekolah dengan mudah</p>
+        </div>
+
+        <div class="form-scroll">
+            <form id="invoice-form" autocomplete="off">
+
+                <!-- Section: School Info -->
+                <div class="form-section open">
+                    <div class="section-header" data-toggle="section">
+                        <span>🏫 Info Sekolah</span>
+                        <span class="toggle-icon">▾</span>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-group">
+                            <label for="companyName">Nama Sekolah</label>
+                            <input type="text" id="companyName" value="Jakarta Cosmopolite Islamic School">
+                        </div>
+                        <div class="form-group">
+                            <label for="logoUpload">Logo Sekolah</label>
+                            <input type="file" id="logoUpload" accept="image/*">
+                            <small class="form-hint">Format: PNG, JPG. Maks 2MB</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Invoice Info -->
+                <div class="form-section open">
+                    <div class="section-header" data-toggle="section">
+                        <span>📋 Info Invoice</span>
+                        <span class="toggle-icon">▾</span>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-group">
+                            <label for="invoiceNumber">Nomor Invoice</label>
+                            <input type="text" id="invoiceNumber" placeholder="INV/2026/00123">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="invoiceDate">Tanggal Invoice</label>
+                                <input type="date" id="invoiceDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="dueDate">Jatuh Tempo</label>
+                                <input type="date" id="dueDate">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Student Info (Bill To) -->
+                <div class="form-section open">
+                    <div class="section-header" data-toggle="section">
+                        <span>🎓 Info Siswa (Bill To)</span>
+                        <span class="toggle-icon">▾</span>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-group">
+                            <label for="studentName">Nama Siswa</label>
+                            <input type="text" id="studentName" placeholder="Nama lengkap siswa">
+                        </div>
+                        <div class="form-group">
+                            <label for="studentLevel">Level / Kelas</label>
+                            <select id="studentLevel">
+                                <option value="">-- Pilih Level --</option>
+                                <option value="Preschool 1">Preschool 1</option>
+                                <option value="Preschool 2">Preschool 2</option>
+                                <option value="Kindergarten 1">Kindergarten 1</option>
+                                <option value="Kindergarten 2">Kindergarten 2</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="academicYear">Tahun Ajaran</label>
+                            <input type="text" id="academicYear" placeholder="2026/2027" value="2026/2027">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Items (Payment Details) -->
+                <div class="form-section open">
+                    <div class="section-header" data-toggle="section">
+                        <span>📦 Detail Pembayaran</span>
+                        <span class="toggle-icon">▾</span>
+                    </div>
+                    <div class="section-body">
+                        <div id="items-container">
+                            <!-- Dynamic item rows will be inserted here -->
+                        </div>
+                        <button type="button" class="btn-add-item" id="btnAddItem">
+                            <span>＋</span> Tambah Item
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Section: Discount -->
+                <div class="form-section open">
+                    <div class="section-header" data-toggle="section">
+                        <span>🏷️ Diskon</span>
+                        <span class="toggle-icon">▾</span>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-group">
+                            <label for="discountAmount">Jumlah Diskon (Rp)</label>
+                            <input type="text" id="discountAmount" placeholder="0" class="input-currency">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Payment Method -->
+                <div class="form-section open">
+                    <div class="section-header" data-toggle="section">
+                        <span>🏦 Metode Pembayaran</span>
+                        <span class="toggle-icon">▾</span>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-group">
+                            <label for="bankName">Bank</label>
+                            <input type="text" id="bankName" placeholder="BNI" value="BNI">
+                        </div>
+                        <div class="form-group">
+                            <label for="bankAccountName">Nama Rekening</label>
+                            <input type="text" id="bankAccountName" placeholder="Jakarta Cosmopolite Islamic School" value="Jakarta Cosmopolite Islamic School">
+                        </div>
+                        <div class="form-group">
+                            <label for="bankAccount">Nomor Rekening</label>
+                            <input type="text" id="bankAccount" placeholder="2028560864" value="2028560864">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Notes -->
+                <div class="form-section">
+                    <div class="section-header" data-toggle="section">
+                        <span>📝 Catatan</span>
+                        <span class="toggle-icon">▾</span>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-group">
+                            <label for="notesBody">Isi Catatan</label>
+                            <textarea id="notesBody" rows="5" placeholder="Catatan tambahan...">Kindly complete the payment before the due date.
+
+Payment confirmation may be sent via WhatsApp to the JACOS Finance Team.
+
+This invoice is automatically generated and does not require a signature.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Closing / Signature -->
+                <div class="form-section">
+                    <div class="section-header" data-toggle="section">
+                        <span>✍️ Penutup</span>
+                        <span class="toggle-icon">▾</span>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-group">
+                            <label for="closingGreeting">Salam Penutup</label>
+                            <input type="text" id="closingGreeting" value="Warm Regards,">
+                        </div>
+                        <div class="form-group">
+                            <label for="closingDepartment">Departemen</label>
+                            <input type="text" id="closingDepartment" value="Finance Department">
+                        </div>
+                        <div class="form-group">
+                            <label for="closingSchoolName">Nama Sekolah (Penutup)</label>
+                            <input type="text" id="closingSchoolName" value="Jakarta Cosmopolite Islamic School">
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+            <button type="button" class="btn-primary" id="btnExportPDF">
+                <span>📄</span> Download PDF
+            </button>
+            <button type="button" class="btn-secondary" id="btnPrint">
+                <span>🖨️</span> Print
+            </button>
+        </div>
+    </aside>
+
+    <!-- ==================== PREVIEW PANEL ==================== -->
+    <main class="preview-panel" id="previewPanel">
+        <div class="preview-toolbar">
+            <h2>Preview Invoice</h2>
+            <div class="toolbar-actions">
+                <button type="button" class="btn-toolbar" id="btnToggleForm" title="Toggle Form">
+                    ☰
+                </button>
+            </div>
+        </div>
+
+        <div class="preview-scroll">
+            <div class="invoice-paper" id="invoice-preview">
+
+                <!-- HEADER -->
+                <div class="inv-header-school">
+                    <div class="inv-header-school-top">
+                        <div class="inv-logo-school">
+                            <img id="prevLogo" src="" alt="Logo" style="display:none;">
+                        </div>
+                        <div class="inv-school-title">
+                            <h1 class="inv-school-name" id="prevCompanyName">JAKARTA COSMOPOLITE ISLAMIC SCHOOL</h1>
+                            <div class="inv-invoice-title">INVOICE</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEPARATOR LINE -->
+                <div class="inv-separator"></div>
+
+                <!-- INVOICE META -->
+                <div class="inv-meta-school">
+                    <div class="inv-meta-row">
+                        <span class="inv-meta-label">Invoice No</span>
+                        <span class="inv-meta-sep">:</span>
+                        <span class="inv-meta-value" id="prevInvoiceNumber">-</span>
+                    </div>
+                    <div class="inv-meta-row">
+                        <span class="inv-meta-label">Invoice Date</span>
+                        <span class="inv-meta-sep">:</span>
+                        <span class="inv-meta-value" id="prevInvoiceDate">-</span>
+                    </div>
+                    <div class="inv-meta-row">
+                        <span class="inv-meta-label inv-meta-bold">Due Date</span>
+                        <span class="inv-meta-sep inv-meta-bold">:</span>
+                        <span class="inv-meta-value inv-meta-bold" id="prevDueDate">-</span>
+                    </div>
+                </div>
+
+                <!-- BILL TO -->
+                <div class="inv-bill-to">
+                    <h3 class="inv-bill-to-title">Bill To</h3>
+                    <div class="inv-bill-to-row">
+                        <span class="inv-bill-label">Student Name :</span>
+                        <span class="inv-bill-value inv-student-name-underline" id="prevStudentName">_________________________</span>
+                    </div>
+                    <div class="inv-bill-to-row">
+                        <span class="inv-bill-label">Level :</span>
+                        <span class="inv-bill-value" id="prevStudentLevel">-</span>
+                    </div>
+                    <div class="inv-bill-to-row">
+                        <span class="inv-bill-label">Academic Year :</span>
+                        <span class="inv-bill-value" id="prevAcademicYear">2026/2027</span>
+                    </div>
+                </div>
+
+                <!-- PAYMENT DETAILS TABLE -->
+                <div class="inv-payment-details">
+                    <h3 class="inv-section-title">Payment Details</h3>
+                    <table class="inv-items-table-school">
+                        <thead>
+                            <tr>
+                                <th class="col-no">No</th>
+                                <th class="col-desc">Description</th>
+                                <th class="col-qty">Qty</th>
+                                <th class="col-amount">Amount (IDR)</th>
+                                <th class="col-status">Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prevItemsBody">
+                            <tr>
+                                <td colspan="5" class="empty-row">Belum ada item</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- SUMMARY ROWS (inside table area) -->
+                    <table class="inv-summary-table-school">
+                        <tr>
+                            <td class="summary-label-cell">Subtotal</td>
+                            <td class="summary-value-cell" id="prevSubtotal">Rp0</td>
+                        </tr>
+                        <tr>
+                            <td class="summary-label-cell">Discount</td>
+                            <td class="summary-value-cell" id="prevDiscount">Rp0</td>
+                        </tr>
+                        <tr class="summary-total-row">
+                            <td class="summary-label-cell">TOTAL PAYMENT</td>
+                            <td class="summary-value-cell" id="prevTotal">Rp0</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- PAYMENT METHOD -->
+                <div class="inv-payment-method">
+                    <h3 class="inv-section-title">Payment Method</h3>
+                    <div class="inv-payment-method-row">
+                        <span class="inv-pm-label">Bank :</span>
+                        <span class="inv-pm-value" id="prevBankName">BNI</span>
+                    </div>
+                    <div class="inv-payment-method-row">
+                        <span class="inv-pm-label">Account Name :</span>
+                        <span class="inv-pm-value" id="prevBankAccountName">Jakarta Cosmopolite Islamic School</span>
+                    </div>
+                    <div class="inv-payment-method-row">
+                        <span class="inv-pm-label">Account Number :</span>
+                        <span class="inv-pm-value" id="prevBankAccount">2028560864</span>
+                    </div>
+                    <p class="inv-payment-note">Please include the <strong>Student's Name</strong> in the transfer description.</p>
+                </div>
+
+                <!-- NOTES -->
+                <div class="inv-notes">
+                    <h3 class="inv-section-title inv-notes-title">Notes</h3>
+                    <ul class="inv-notes-list" id="prevNotesList">
+                        <li>Kindly complete the payment before the due date.</li>
+                    </ul>
+                </div>
+
+                <!-- SEPARATOR LINE -->
+                <div class="inv-separator inv-separator-bottom"></div>
+
+                <!-- ADDITIONAL NOTES (below separator) -->
+                <ul class="inv-notes-list inv-notes-bottom" id="prevNotesBottom">
+                    <li>Payment confirmation may be sent via WhatsApp to the JACOS Finance Team.</li>
+                    <li>This invoice is automatically generated and does not require a signature.</li>
+                </ul>
+
+                <!-- CLOSING / FOOTER -->
+                <div class="inv-closing">
+                    <p class="inv-closing-greeting" id="prevClosingGreeting">Warm Regards,</p>
+                    <p class="inv-closing-dept" id="prevClosingDepartment"><strong>Finance Department</strong></p>
+                    <p class="inv-closing-school" id="prevClosingSchool"><strong>Jakarta Cosmopolite Islamic School</strong></p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

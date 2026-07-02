@@ -5,6 +5,7 @@
 // --- State ---
 let itemCounter = 0;
 let logoDataUrl = null;
+let signatureDataUrl = null;
 
 // --- DOM Ready ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -24,6 +25,12 @@ function setDefaultDates() {
     const today = new Date();
     const dateStr = formatDateISO(today);
     document.getElementById('invoiceDate').value = dateStr;
+
+    // Default due date: 14 days from now
+    const due = new Date(today);
+    due.setDate(due.getDate() + 14);
+    document.getElementById('dueDate').value = formatDateISO(due);
+
     updatePreview();
 }
 
@@ -50,6 +57,9 @@ function initFormListeners() {
 
     // Logo upload
     document.getElementById('logoUpload').addEventListener('change', handleLogoUpload);
+
+    // Signature upload
+    document.getElementById('signatureUpload').addEventListener('change', handleSignatureUpload);
 
     // Currency input formatting for payment received
     const paymentInput = document.getElementById('paymentReceived');
@@ -195,6 +205,24 @@ function handleLogoUpload(e) {
     reader.readAsDataURL(file);
 }
 
+function handleSignatureUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Ukuran file tanda tangan maks 2MB');
+        e.target.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        signatureDataUrl = event.target.result;
+        updatePreview();
+    };
+    reader.readAsDataURL(file);
+}
+
 // =============================================
 // PREVIEW UPDATE
 // =============================================
@@ -254,9 +282,20 @@ function updatePreview() {
     const invoiceDateVal = getVal('invoiceDate');
     setText('prevInvoiceDate', formatDateDisplay(invoiceDateVal));
 
-    // Due Date (text input now)
-    const dueDateVal = getVal('dueDate') || '25/bulan/tahun';
-    setText('prevDueDate', dueDateVal);
+    // Due Date
+    const dueDateVal = getVal('dueDate');
+    setText('prevDueDate', dueDateVal ? formatDateDisplay(dueDateVal) : '-');
+
+    // Signature
+    const signatureImg = document.getElementById('prevSignature');
+    if (signatureImg) {
+        if (signatureDataUrl) {
+            signatureImg.src = signatureDataUrl;
+            signatureImg.style.display = 'block';
+        } else {
+            signatureImg.style.display = 'none';
+        }
+    }
 
     // Student Info
     const studentName = getVal('studentName');

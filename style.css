@@ -829,7 +829,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 320px;
+    min-width: 180px;
     text-align: center;
 }
 
@@ -842,8 +842,8 @@ body {
 }
 
 .inv-signature-img img {
-    max-width: 100px;
-    max-height: 55px;
+    max-width: 280px;
+    max-height: 100px;
     object-fit: contain;
 }
 

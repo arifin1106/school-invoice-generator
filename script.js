@@ -24,11 +24,6 @@ function setDefaultDates() {
     const today = new Date();
     const dateStr = formatDateISO(today);
     document.getElementById('invoiceDate').value = dateStr;
-
-    const due = new Date(today);
-    due.setDate(due.getDate() + 14);
-    document.getElementById('dueDate').value = formatDateISO(due);
-
     updatePreview();
 }
 
@@ -56,15 +51,15 @@ function initFormListeners() {
     // Logo upload
     document.getElementById('logoUpload').addEventListener('change', handleLogoUpload);
 
-    // Currency input formatting for discount
-    const discountInput = document.getElementById('discountAmount');
-    discountInput.addEventListener('blur', function () {
+    // Currency input formatting for payment received
+    const paymentInput = document.getElementById('paymentReceived');
+    paymentInput.addEventListener('blur', function () {
         const val = parseCurrencyInput(this.value);
         if (!isNaN(val) && val > 0) {
             this.value = formatNumber(val);
         }
     });
-    discountInput.addEventListener('focus', function () {
+    paymentInput.addEventListener('focus', function () {
         const val = parseCurrencyInput(this.value);
         if (!isNaN(val) && val > 0) {
             this.value = val;
@@ -104,25 +99,21 @@ function addItem() {
             <button type="button" class="btn-remove-item" onclick="removeItem(${itemCounter})">✕ Hapus</button>
         </div>
         <div class="form-group">
-            <label>Deskripsi</label>
+            <label>Keterangan</label>
             <input type="text" class="item-desc" placeholder="Contoh: Registration Fee, Admission Fee...">
         </div>
         <div class="form-row-2">
             <div class="form-group">
-                <label>Jumlah (Rp)</label>
+                <label>Nominal (Rp)</label>
                 <input type="text" class="item-price input-currency" placeholder="0">
             </div>
             <div class="form-group">
-                <label>Qty</label>
-                <input type="number" class="item-qty" value="1" min="1">
+                <label>Status Pembayaran</label>
+                <select class="item-status">
+                    <option value="unpaid">Belum Lunas</option>
+                    <option value="paid">Lunas</option>
+                </select>
             </div>
-        </div>
-        <div class="form-group">
-            <label>Status Pembayaran</label>
-            <select class="item-status">
-                <option value="unpaid">Belum Dibayar</option>
-                <option value="paid">Sudah Dibayar</option>
-            </select>
         </div>
     `;
 
@@ -145,7 +136,7 @@ function addItem() {
     });
 
     // Auto-update on changes
-    card.querySelector('.item-qty').addEventListener('input', () => updatePreview());
+    card.querySelector('.item-desc').addEventListener('input', () => updatePreview());
     card.querySelector('.item-price').addEventListener('input', () => updatePreview());
     card.querySelector('.item-status').addEventListener('change', () => updatePreview());
 
@@ -170,16 +161,12 @@ function getItems() {
     document.querySelectorAll('.item-card').forEach((card, index) => {
         const desc = card.querySelector('.item-desc').value.trim();
         const price = parseCurrencyInput(card.querySelector('.item-price').value) || 0;
-        const qty = parseInt(card.querySelector('.item-qty').value) || 0;
         const status = card.querySelector('.item-status').value;
-        const total = price * qty;
 
         items.push({
             no: index + 1,
             description: desc || '-',
             price,
-            qty,
-            total,
             status
         });
     });
@@ -215,98 +202,136 @@ function handleLogoUpload(e) {
 function updatePreview() {
     // School Name
     const schoolName = getVal('companyName') || 'Jakarta Cosmopolite Islamic School';
-    setText('prevCompanyName', schoolName.toUpperCase());
+    setText('prevCompanyName', schoolName);
+
+    // School Address
+    const schoolAddress = getVal('schoolAddress') || '';
+    const addressEl = document.getElementById('prevSchoolAddress');
+    if (addressEl) {
+        addressEl.textContent = schoolAddress ? 'Alamat: ' + schoolAddress : '';
+    }
+
+    // School Phone
+    const schoolPhone = getVal('schoolPhone') || '';
+    const phoneEl = document.getElementById('prevSchoolPhone');
+    if (phoneEl) {
+        phoneEl.textContent = schoolPhone ? 'Telepon: ' + schoolPhone : '';
+    }
+
+    // School Email
+    const schoolEmail = getVal('schoolEmail') || '';
+    const emailEl = document.getElementById('prevSchoolEmail');
+    if (emailEl) {
+        emailEl.textContent = schoolEmail ? 'Email: ' + schoolEmail : '';
+    }
 
     // Logo
     const logoImg = document.getElementById('prevLogo');
+    const logoPlaceholder = document.getElementById('prevLogoPlaceholder');
+    const logoFooterImg = document.getElementById('prevLogoFooter');
+    const logoFooterPlaceholder = document.getElementById('prevLogoFooterPlaceholder');
+
     if (logoDataUrl) {
         logoImg.src = logoDataUrl;
         logoImg.style.display = 'block';
+        if (logoPlaceholder) logoPlaceholder.style.display = 'none';
+
+        logoFooterImg.src = logoDataUrl;
+        logoFooterImg.style.display = 'block';
+        if (logoFooterPlaceholder) logoFooterPlaceholder.style.display = 'none';
     } else {
         logoImg.style.display = 'none';
+        if (logoPlaceholder) logoPlaceholder.style.display = 'flex';
+
+        logoFooterImg.style.display = 'none';
+        if (logoFooterPlaceholder) logoFooterPlaceholder.style.display = 'flex';
     }
 
     // Invoice Info
-    setText('prevInvoiceNumber', getVal('invoiceNumber') || '-');
-    setText('prevInvoiceDate', formatDateDisplayLong(getVal('invoiceDate')));
+    const invoiceNum = getVal('invoiceNumber') || '-';
+    setText('prevInvoiceNumber', invoiceNum);
 
-    const dueDateVal = getVal('dueDate');
-    setText('prevDueDate', formatDateDisplayLong(dueDateVal));
+    const invoiceDateVal = getVal('invoiceDate');
+    setText('prevInvoiceDate', formatDateDisplay(invoiceDateVal));
 
-    // Student / Bill To
+    // Due Date (text input now)
+    const dueDateVal = getVal('dueDate') || '25/bulan/tahun';
+    setText('prevDueDate', dueDateVal);
+
+    // Student Info
     const studentName = getVal('studentName');
     const studentNameEl = document.getElementById('prevStudentName');
-    if (studentName) {
-        studentNameEl.textContent = studentName;
-    } else {
-        studentNameEl.innerHTML = '_________________________';
+    if (studentNameEl) {
+        studentNameEl.textContent = studentName || '(diisi nama student)';
     }
 
-    setText('prevStudentLevel', getVal('studentLevel') || '-');
-    setText('prevAcademicYear', getVal('academicYear') || '-');
+    setText('prevStudentLevel', getVal('studentLevel') || 'P1/P2/K1/K2');
 
     // Items Table
     const items = getItems();
     const tbody = document.getElementById('prevItemsBody');
     if (items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="empty-row">Belum ada item</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-row">Belum ada item</td></tr>';
     } else {
         tbody.innerHTML = items.map(item => {
-            const statusClass = item.status === 'paid' ? 'status-paid' : 'status-unpaid';
-            const statusText = item.status === 'paid' ? 'Sudah Dibayar' : 'Belum Dibayar';
+            const statusText = item.status === 'paid' ? 'Lunas' : 'Belum Lunas';
             return `
                 <tr>
                     <td class="text-center">${item.no}</td>
                     <td>${escapeHtml(item.description)}</td>
-                    <td class="text-center">${item.qty}</td>
-                    <td class="text-right">Rp${formatNumber(item.total)}</td>
-                    <td class="text-center"><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td class="text-right">Rp ${formatNumber(item.price)}</td>
+                    <td class="text-center">${statusText}</td>
                 </tr>
             `;
         }).join('');
     }
 
     // Summary
-    const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-    const discount = parseCurrencyInput(getVal('discountAmount')) || 0;
-    const totalPayment = Math.max(subtotal - discount, 0);
+    const total = items.reduce((sum, item) => sum + item.price, 0);
+    const paymentReceived = parseCurrencyInput(getVal('paymentReceived')) || 0;
+    const sisaTagihan = Math.max(total - paymentReceived, 0);
 
-    setText('prevSubtotal', 'Rp' + formatNumber(subtotal));
-    setText('prevDiscount', 'Rp' + formatNumber(discount));
-    setText('prevTotal', 'Rp' + formatNumber(totalPayment));
+    setText('prevTotal', 'Rp ' + formatNumber(total));
+    setText('prevPaymentReceived', 'Rp ' + formatNumber(paymentReceived));
+    setText('prevSisaTagihan', 'Rp ' + formatNumber(sisaTagihan));
 
-    // Payment Method
+    // Payment Method (footer)
     setText('prevBankName', getVal('bankName') || 'BNI');
-    setText('prevBankAccountName', getVal('bankAccountName') || 'Jakarta Cosmopolite Islamic School');
     setText('prevBankAccount', getVal('bankAccount') || '-');
+    setText('prevBankAccountName', getVal('bankAccountName') || 'Yayasan Cahaya Pembangunan Global Indonesia');
 
-    // Notes
-    const notesText = getVal('notesBody');
-    if (notesText) {
-        const lines = notesText.split('\n').filter(l => l.trim() !== '');
-        // First note goes to main notes section
-        const notesList = document.getElementById('prevNotesList');
-        const notesBottom = document.getElementById('prevNotesBottom');
+    // Pesan
+    const pesanBody = getVal('pesanBody') || '';
+    const pesanLines = pesanBody.split('\n').filter(l => l.trim() !== '');
+    const pesanStudentEl = document.getElementById('prevPesanStudent');
+    const pesanBodyEl = document.getElementById('prevPesanBody');
+    const pesanWAEl = document.getElementById('prevPesanWA');
 
-        if (lines.length > 0) {
-            notesList.innerHTML = `<li>${escapeHtml(lines[0])}</li>`;
-        }
-
-        if (lines.length > 1) {
-            notesBottom.innerHTML = lines.slice(1).map(line => `<li>${escapeHtml(line)}</li>`).join('');
-            notesBottom.style.display = 'block';
-        } else {
-            notesBottom.innerHTML = '';
-            notesBottom.style.display = 'none';
-        }
+    if (pesanStudentEl) {
+        pesanStudentEl.textContent = studentName || 'Nama student';
     }
 
-    // Closing
-    setText('prevClosingGreeting', getVal('closingGreeting') || 'Warm Regards,');
-    const closingDept = getVal('closingDepartment') || 'Finance Department';
-    const closingSchool = getVal('closingSchoolName') || 'Jakarta Cosmopolite Islamic School';
-    document.getElementById('prevClosingDepartment').innerHTML = `<strong>${escapeHtml(closingDept)}</strong>`;
-    document.getElementById('prevClosingSchool').innerHTML = `<strong>${escapeHtml(closingSchool)}</strong>`;
+    if (pesanLines.length > 0) {
+        // First line is the main message body
+        if (pesanBodyEl) pesanBodyEl.textContent = pesanLines[0];
+        // Remaining lines joined (usually WhatsApp contact)
+        if (pesanWAEl) {
+            if (pesanLines.length > 1) {
+                pesanWAEl.textContent = pesanLines.slice(1).join('\n');
+                pesanWAEl.style.display = 'block';
+            } else {
+                pesanWAEl.textContent = '';
+                pesanWAEl.style.display = 'none';
+            }
+        }
+    } else {
+        if (pesanBodyEl) pesanBodyEl.textContent = '';
+        if (pesanWAEl) { pesanWAEl.textContent = ''; pesanWAEl.style.display = 'none'; }
+    }
+
+    // Signer
+    setText('prevSignerName', getVal('signerName') || 'RR Ratih Retno Sari, S.P');
+    setText('prevSignerTitle', getVal('signerTitle') || 'Finance Manager');
 }
 
 // =============================================
@@ -315,28 +340,13 @@ function updatePreview() {
 
 function formatNumber(num) {
     if (num === 0) return '0';
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
-
-function formatCurrency(num) {
-    if (num === 0) return '0,00';
-
-    const isNeg = num < 0;
-    num = Math.abs(num);
-
-    const intPart = Math.floor(num);
-    const decPart = Math.round((num - intPart) * 100);
-
-    const intStr = intPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    const decStr = decPart.toString().padStart(2, '0');
-
-    return (isNeg ? '-' : '') + intStr + ',' + decStr;
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 function parseCurrencyInput(str) {
     if (!str) return 0;
-    // Remove dots (thousand separators), replace comma with dot for decimal
-    const cleaned = str.toString().replace(/\./g, '').replace(',', '.');
+    // Remove commas and dots (thousand separators)
+    const cleaned = str.toString().replace(/,/g, '').replace(/\./g, '');
     const val = parseFloat(cleaned);
     return isNaN(val) ? 0 : val;
 }
@@ -347,26 +357,14 @@ function parseCurrencyInput(str) {
 
 function formatDateDisplay(dateStr) {
     if (!dateStr) return '-';
-    const parts = dateStr.split('-');
-    if (parts.length !== 3) return dateStr;
-    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-}
-
-function formatDateDisplayLong(dateStr) {
-    if (!dateStr) return '-';
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateStr;
 
-    const months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-
-    const day = date.getDate();
-    const month = months[date.getMonth()];
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
 
-    return `${day} ${month} ${year}`;
+    return `${day}/${month}/${year}`;
 }
 
 // =============================================
